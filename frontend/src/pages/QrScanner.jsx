@@ -1,25 +1,20 @@
-import { useState, useRef, useCallback } from "react";
-import { QrReader } from "react-qr-reader";
+import QrReader from "react-qr-scanner";
 import { scanSerial } from "../api";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function QRScanner() {
   const [serial, setSerial] = useState("");
   const [result, setResult] = useState(null);
-  const [facingMode, setFacingMode] = useState("environment"); // 'environment' or 'user'
-  const scannerRef = useRef(null);
 
-  const handleScan = useCallback((data) => {
+  const handleScan = (data) => {
     if (data) {
-      const scanned = typeof data === "string" ? data : data?.text;
-      if (scanned && scanned !== serial) {
-        setSerial(scanned);
-        checkSerial(scanned);
-      }
+      const scanned = typeof data === "string" ? data : data?.text || data;
+      setSerial(scanned);
+      checkSerial(scanned);
     }
-  }, [serial]);
+  };
 
-  const handleError = (err) => console.error("QR Scanner error:", err);
+  const handleError = (err) => console.error(err);
 
   const checkSerial = async (serialNumber) => {
     try {
@@ -41,10 +36,6 @@ export default function QRScanner() {
     setResult(null);
   };
 
-  const toggleCamera = () => {
-    setFacingMode(prev => prev === "environment" ? "user" : "environment");
-  };
-
   return (
     <div className="flex flex-col items-center justify-start p-6 min-h-screen bg-gradient-to-b from-pink-100 via-orange-100 to-yellow-50">
       <motion.h1
@@ -58,39 +49,13 @@ export default function QRScanner() {
 
       {/* QR Scanner */}
       <motion.div
-        className="w-full max-w-md mb-6 bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-300 overflow-hidden relative"
+        className="w-full max-w-md mb-6 bg-white/60 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-300 overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <QrReader
-          ref={scannerRef}
-          onResult={(result, error) => {
-            if (result) {
-              handleScan(result);
-            }
-            if (error) {
-              handleError(error);
-            }
-          }}
-          constraints={{
-            facingMode: facingMode,
-            aspectRatio: 1 // Square aspect ratio for better scanning
-          }}
-          containerStyle={{ width: "100%", padding: "0" }}
-          videoContainerStyle={{ width: "100%", paddingTop: "100%", position: "relative" }}
-          videoStyle={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          scanDelay={350}
-        />
-        
-        {/* Camera Toggle Button */}
-        <button
-          onClick={toggleCamera}
-          className="absolute bottom-4 right-4 p-2 bg-white/80 rounded-full shadow-lg hover:bg-white transition-colors"
-          title="Switch camera"
-        >
-          🔄
-        </button>
+        <QrReader delay={350} onError={handleError} onScan={handleScan} style={{ width: "100%" }} 
+        constraints={{ facingMode: "environment" }} />
       </motion.div>
 
       {/* Manual Input */}
@@ -108,10 +73,7 @@ export default function QRScanner() {
           onChange={(e) => setSerial(e.target.value)}
           className="p-4 w-full border-2 border-pink-300 rounded-2xl text-center text-m font-semibold focus:outline-none focus:ring-4 focus:ring-pink-400 placeholder-pink-600"
         />
-        <button 
-          type="submit"
-          className="w-full py-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300"
-        >
+        <button className="w-full py-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white text-xl font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300">
           Check
         </button>
       </motion.form>
