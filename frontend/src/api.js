@@ -1,4 +1,4 @@
-const API_URL = "https://gokulrass.onrender.com/";
+const API_URL = "https://gokulrass.onrender.com/api";
 
 export async function scanSerial(serialNumber, assignedTo = "Guest") {
   const res = await fetch(`${API_URL}/scan`, {
