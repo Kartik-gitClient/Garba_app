@@ -55,7 +55,14 @@ export default function QRScanner() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <QrReader delay={200} onError={handleError} onScan={handleScan} style={{ width: "100%" }} />
+        <QrReader
+  delay={350}
+  onError={handleError}
+  onScan={handleScan}
+  style={{ width: "100%" }}
+  constraints={{ facingMode: "environment" }} // 🔥 forces back camera
+/>
+
       </motion.div>
 
       {/* Manual Input */}
