@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { getAllEntries } from "../api";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export default function AdminDashboard() {
   const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [error, setError] = useState("");
 
-  const PASSWORD = "admin123"; // change this to a stronger password
+  const PASSWORD = "Gokulrass@123"; // change this to a stronger password
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -21,7 +24,12 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (authenticated) getAllEntries().then(setEntries);
+    if (authenticated) {
+      setLoading(true);
+      getAllEntries()
+        .then((data) => setEntries(data))
+        .finally(() => setLoading(false));
+    }
   }, [authenticated]);
 
   if (!authenticated) {
@@ -53,36 +61,64 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-b from-blue-50 to-green-50">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">📋 Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">
+        📋 Admin Dashboard
+      </h1>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded-2xl shadow-lg border border-gray-200">
           <thead className="bg-blue-100 rounded-t-2xl">
             <tr>
               {["SNo", "Serial", "Assigned", "Assigned To"].map((col) => (
-                <th key={col} className="p-3 text-left text-blue-700 font-semibold border-b">
+                <th
+                  key={col}
+                  className="p-3 text-left text-blue-700 font-semibold border-b"
+                >
                   {col}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {entries.map((e) => (
-              <motion.tr
-                key={e._id}
-                className="hover:bg-blue-50 transition-colors"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <td className="p-3 border-b">{e.SNo}</td>
-                <td className="p-3 border-b">{e.SerialNumber}</td>
-                <td className={`p-3 border-b ${e.IsAssigned ? "text-green-600" : "text-red-500"}`}>
-                  {e.IsAssigned ? "✅" : "❌"}
-                </td>
-                <td className="p-3 border-b">{e.assignedTo || "-"}</td>
-              </motion.tr>
-            ))}
+            {loading
+              ? Array(6)
+                  .fill(0)
+                  .map((_, i) => (
+                    <tr key={i}>
+                      <td className="p-3 border-b">
+                        <Skeleton width={40} />
+                      </td>
+                      <td className="p-3 border-b">
+                        <Skeleton width={120} />
+                      </td>
+                      <td className="p-3 border-b">
+                        <Skeleton width={30} />
+                      </td>
+                      <td className="p-3 border-b">
+                        <Skeleton width={100} />
+                      </td>
+                    </tr>
+                  ))
+              : entries.map((e) => (
+                  <motion.tr
+                    key={e._id}
+                    className="hover:bg-blue-50 transition-colors"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <td className="p-3 border-b">{e.SNo}</td>
+                    <td className="p-3 border-b">{e.SerialNumber}</td>
+                    <td
+                      className={`p-3 border-b ${
+                        e.IsAssigned ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {e.IsAssigned ? "✅" : "❌"}
+                    </td>
+                    <td className="p-3 border-b">{e.assignedTo || "-"}</td>
+                  </motion.tr>
+                ))}
           </tbody>
         </table>
       </div>

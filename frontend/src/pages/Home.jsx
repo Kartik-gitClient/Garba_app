@@ -14,6 +14,7 @@ export default function Home() {
       >
         
         <div className="flex flex-col sm:flex-row justify-center gap-6">
+
           <Link 
             to="/scan" 
             className="px-8 py-4 bg-gradient-to-r from-orange-400 to-pink-500 text-white rounded-2xl font-bold shadow-lg hover:scale-105 hover:shadow-xl transition-transform duration-300 text-center"
