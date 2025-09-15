@@ -98,7 +98,7 @@ export default function QRScanner() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        GOKULRASS
+        GOKULRAAS
       </motion.h1>
 
       {/* Toggle Switch */}
@@ -276,3 +276,4 @@ export default function QRScanner() {
     </div>
   );
 }
+
