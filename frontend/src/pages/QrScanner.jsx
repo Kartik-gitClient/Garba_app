@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { BrowserMultiFormatReader } from "@zxing/library";
 import { scanSerial } from "../api";
 import { motion, AnimatePresence } from "framer-motion";
-import gokulrass from "./logo.png"
+import gokulrass from "./logo.png";
 
 export default function QRScanner() {
   const [serial, setSerial] = useState("");
@@ -24,24 +24,20 @@ export default function QRScanner() {
 
   useEffect(() => {
     if (!videoDevices.length || mode !== "qr") return;
-
     const codeReader = new BrowserMultiFormatReader();
     let active = true;
-
     const selectedDevice =
       videoDevices.find((d) =>
         facingMode === "environment"
           ? d.label.toLowerCase().includes("back")
           : d.label.toLowerCase().includes("front")
       ) || videoDevices[0];
-
     codeReader
       .decodeFromVideoDevice(
         selectedDevice.deviceId,
         videoRef.current,
         (res, err) => {
           if (!active) return;
-
           if (res) {
             const scanned = res.getText();
             if (scanned !== lastScanned.current) {
@@ -50,14 +46,12 @@ export default function QRScanner() {
               checkSerial(scanned);
             }
           }
-
           (err) => {
             if (err && err.name !== "NotFoundException") console.error(err);
           };
         }
       )
       .catch((err) => console.error("Camera access denied or error:", err));
-
     return () => {
       active = false;
       codeReader.reset();
@@ -97,7 +91,6 @@ export default function QRScanner() {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 min-h-screen bg-gradient-to-b from-pink-100 via-orange-100 to-yellow-50">
-
       <img src={gokulrass} className="h-30" />
       <motion.h1
         className="text-3xl sm:text-4xl font-extrabold mb-4 text-center text-orange-700 animate-pulse"
@@ -105,7 +98,7 @@ export default function QRScanner() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-         GOKULRASS 
+        GOKULRASS
       </motion.h1>
 
       {/* Toggle Switch */}
